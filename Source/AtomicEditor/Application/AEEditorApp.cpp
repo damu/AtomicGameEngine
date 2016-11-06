@@ -89,18 +89,7 @@ namespace AtomicEditor
         ToolEnvironment* env = new ToolEnvironment(context_);
         context_->RegisterSubsystem(env);
 
-#ifdef ATOMIC_DEV_BUILD
-
-        if (!env->InitFromJSON())
-        {
-            ErrorExit(ToString("Unable to initialize tool environment from %s", env->GetDevConfigFilename().CString()));
-            return;
-        }
-#else
-
-        env->InitFromPackage();
-
-#endif
+        env->Initialize();
 
         ToolSystem* system = new ToolSystem(context_);
         context_->RegisterSubsystem(system);
@@ -185,7 +174,12 @@ namespace AtomicEditor
 
     void AEEditorApp::Stop()
     {
-        context_->RemoveSubsystem<IPC>();
+        IPC* ipc = GetSubsystem<IPC>();
+
+        if (ipc)
+        {
+            ipc->Shutdown();
+        }
 
         AppBase::Stop();
     }

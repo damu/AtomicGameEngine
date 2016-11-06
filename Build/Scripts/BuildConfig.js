@@ -1,6 +1,21 @@
 var os = require('os');
 var path = require('path');
 var spawnSync = require('child_process').spawnSync;
+var fs = require('fs-extra');
+
+// function from BuildCommon, checks to see if a file exists
+function programFileExists(filePath)
+{
+    try
+    {
+        return fs.statSync(filePath).isFile();
+    }
+    catch (err)
+    {
+        return false;
+    }
+}
+
 
 function processOptions(config) {
 
@@ -12,13 +27,15 @@ function processOptions(config) {
     } else {
         if (os.platform() == "win32") {
             config["with-atomicnet"] = true;
-        } else {
+        } else if (os.platform() == "darwin") {
             // see if xbuild is available
             config["with-atomicnet"]  = false;
-            if ( spawnSync) // TODO: CI box doesn't have spawnSync
+            if ( spawnSync)
                 config["with-atomicnet"] = spawnSync("which", ["xbuild"]).status == 1 ? false : true;
+        } else if (os.platform() == "linux") {  // see if xbuild is available on linux
+            config["with-atomicnet"] = programFileExists('/usr/bin/xbuild');
         }
-    }
+	}
 
     // paths
     config.atomicRoot = path.resolve(__dirname, "../..") + "/";
@@ -43,10 +60,11 @@ exports = module.exports = processOptions(require('minimist')(process.argv.slice
         "noclean" : false,
         "debug" : false,
         "nonet" : false,
+        "with-web" : false,
         "with-android" : false,
         "with-ios" : false,
         "with-docs" : false,
-        "with-examples" : false,
+        "noexamples" : false,
         "package" : false
     }
 }));
