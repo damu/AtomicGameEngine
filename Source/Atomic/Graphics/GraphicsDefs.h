@@ -420,6 +420,10 @@ extern ATOMIC_API const StringHash PSP_LIGHTMATRICES;
 extern ATOMIC_API const StringHash PSP_VSMSHADOWPARAMS;
 extern ATOMIC_API const StringHash PSP_ROUGHNESS;
 extern ATOMIC_API const StringHash PSP_METALLIC;
+extern ATOMIC_API const StringHash PSP_LIGHTRAD;
+extern ATOMIC_API const StringHash PSP_LIGHTLENGTH;
+extern ATOMIC_API const StringHash PSP_ZONEMIN;
+extern ATOMIC_API const StringHash PSP_ZONEMAX;
 
 // Scale calculation from bounding box diagonal.
 extern ATOMIC_API const Vector3 DOT_SCALE;

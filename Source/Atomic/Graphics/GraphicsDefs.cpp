@@ -85,6 +85,11 @@ extern ATOMIC_API const StringHash PSP_LIGHTMATRICES("LightMatricesPS");
 extern ATOMIC_API const StringHash PSP_VSMSHADOWPARAMS("VSMShadowParams");
 extern ATOMIC_API const StringHash PSP_ROUGHNESS("Roughness");
 extern ATOMIC_API const StringHash PSP_METALLIC("Metallic");
+extern ATOMIC_API const StringHash PSP_LIGHTRAD("LightRad");
+extern ATOMIC_API const StringHash PSP_LIGHTLENGTH("LightLength");
+extern ATOMIC_API const StringHash PSP_ZONEMIN("ZoneMin");
+extern ATOMIC_API const StringHash PSP_ZONEMAX("ZoneMax");
+
 
 extern ATOMIC_API const Vector3 DOT_SCALE(1 / 3.0f, 1 / 3.0f, 1 / 3.0f);
 

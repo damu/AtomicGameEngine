@@ -253,7 +253,15 @@ void PS(
         float3 lightColor;
         float3 finalColor;
 
-        float atten = GetAtten(normal, iWorldPos.xyz, lightDir);
+        float atten = 1;
+
+        #if defined(DIRLIGHT)
+            atten = GetAtten(normal, iWorldPos.xyz, lightDir);
+        #elif defined(SPOTLIGHT)
+            atten = GetAttenSpot(normal, iWorldPos.xyz, lightDir);
+        #else
+            atten = GetAttenPoint(normal, iWorldPos.xyz, lightDir);
+        #endif
 
         float shadow = 1.0;
 
@@ -275,8 +283,8 @@ void PS(
         const float ndl = clamp((dot(normal, lightVec)), M_EPSILON, 1.0);
 
 
-        float3 BRDF = GetBRDF(lightDir, lightVec, toCamera, normal, roughness, diffColor.rgb, specColor);
-        finalColor.rgb = BRDF * lightColor * (atten * shadow) / M_PI;
+        float3 BRDF = GetBRDF(iWorldPos.xyz, lightDir, lightVec, toCamera, normal, roughness, diffColor.rgb, specColor);
+        finalColor.rgb = pow(BRDF * lightColor * (atten * shadow) / M_PI, 1.0/ 2.2);
 
         #ifdef AMBIENT
             finalColor += cAmbientColor.rgb * diffColor.rgb;
@@ -332,6 +340,6 @@ void PS(
             finalColor += cMatEmissiveColor;
         #endif
 
-        oColor = float4(GetFog(finalColor, fogFactor), diffColor.a);
+        oColor = float4(pow(GetFog(finalColor, fogFactor), 1.0 / 2.2), diffColor.a);
     #endif
 }

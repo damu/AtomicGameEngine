@@ -180,6 +180,10 @@ public:
     void SetColor(const Color& color);
     /// Set temperature of the light in Kelvin. Modulates the light color when "use physical values" is enabled.
     void SetTemperature(float temperature);
+	/// Set radius of the light
+	void SetRadius(float radius);
+	/// Set length of the light
+	void SetLength(float length);
     /// Set use physical light values.
     void SetUsePhysicalValues(bool enable);
     /// Set specular intensity. Zero disables specular calculations.
@@ -226,6 +230,12 @@ public:
 
     /// Return the temperature of the light in Kelvin.
     float GetTemperature() const { return temperature_; }
+
+	/// Return the radius of the light
+	float GetRadius() const { return lightRad_; }
+
+	/// Return the length of the light
+	float GetLength() const { return lightLength_; }
 
     /// Return if light uses temperature and brightness in lumens.
     bool GetUsePhysicalValues() const { return usePhysicalValues_; }
@@ -339,6 +349,10 @@ private:
     Color color_;
     /// Light Temperature.
     float temperature_;
+	/// Radius of the light
+	float lightRad_;
+	/// Length of the light
+	float lightLength_;
     /// Shadow depth bias parameters.
     BiasParameters shadowBias_;
     /// Directional light cascaded shadow parameters.
