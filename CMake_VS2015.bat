@@ -13,7 +13,7 @@ set "cdir=%~dp0"
 set "cdir=%cdir:~0,-1%"
 for %%i IN ("%cdir%") do set "foldername=%%~nxi"
 :: run cmake
-cmake -E make_directory "..\%foldername%-VS2015" && cmake -E chdir "..\%foldername%-VS2015" cmake %~dp0 -G "Visual Studio 14 2015 Win64"
+cmake -E make_directory "..\%foldername%-VS2015" && cmake -E chdir "..\%foldername%-VS2015" cmake %~dp0 -G "Visual Studio 14 2015 Win64" -DATOMIC_D3D11=1
 @echo:
 ECHO Solution created in ..\%foldername%-VS2015
 @echo:
