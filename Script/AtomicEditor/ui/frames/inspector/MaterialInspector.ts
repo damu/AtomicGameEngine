@@ -51,6 +51,12 @@ var lightmapSource = new Atomic.UIMenuItemSource();
 lightmapSource.addItem(new Atomic.UIMenuItem("Lightmap", "Lightmap"));
 lightmapSource.addItem(new Atomic.UIMenuItem("Lightmap Alpha", "Lightmap Alpha"));
 
+var diffuseModelSource = new Atomic.UIMenuItemSource();
+diffuseModelSource.addItem(new Atomic.UIMenuItem("Diffuse Model 1","Diffuse Model 1"));
+diffuseModelSource.addItem(new Atomic.UIMenuItem("Diffuse Model 2","Diffuse Model 2"));
+diffuseModelSource.addItem(new Atomic.UIMenuItem("Diffuse Model 3","Diffuse Model 3"));
+diffuseModelSource.addItem(new Atomic.UIMenuItem("Diffuse Model 4","Diffuse Model 4"));
+
 var projectSource = new Atomic.UIMenuItemSource();
 var _ = new Atomic.UIMenuItem();
 
@@ -249,6 +255,45 @@ class MaterialInspector extends ScriptWidget {
         return button;
 
     }
+
+    createDiffuseModelPopup(): Atomic.UIWidget {
+
+        var button = this.diffuseModelButton = new Atomic.UIButton();
+
+        button.text = "foobar";
+
+        button.fontDescription = this.fd;
+
+        var lp = new Atomic.UILayoutParams();
+        lp.width = 140;
+        button.layoutParams = lp;
+
+        button.onClick = function () {
+
+            var menu = new Atomic.UIMenuWindow(button, "diffuse model popup");
+
+            menu.fontDescription = this.fd;
+            menu.show(diffuseModelSource);
+
+            button.subscribeToEvent(button, "WidgetEvent", function (ev: Atomic.UIWidgetEvent) {
+
+                if (ev.type != Atomic.UI_EVENT_TYPE_CLICK)
+                    return;
+
+                if (ev.target && ev.target.id == "diffuse model popup") {
+
+                    this.onTechniqueSet(ev.refid);
+
+                }
+
+            }.bind(this));
+
+        }.bind(this);
+
+        return button;
+
+    }
+
 
     acceptAssetDrag(importerTypeName: string, ev: Atomic.DragEndedEvent): ToolCore.AssetImporter {
 
@@ -574,10 +619,27 @@ class MaterialInspector extends ScriptWidget {
         techniqueLayout.addChild(name);
 
         var techniquePopup = this.createTechniquePopup();
-
         techniqueLayout.addChild(techniquePopup);
 
         attrsVerticalLayout.addChild(techniqueLayout);
+
+        // DIFFUSE MODEL LAYOUT
+
+        var DiffuseModelLayout = new Atomic.UILayout();
+        DiffuseModelLayout.layoutSize = Atomic.UI_LAYOUT_SIZE_GRAVITY;
+        DiffuseModelLayout.layoutDistribution = Atomic.UI_LAYOUT_DISTRIBUTION_PREFERRED;
+
+        name = new Atomic.UITextField();
+        name.textAlign = Atomic.UI_TEXT_ALIGN_LEFT;
+        name.skinBg = "InspectorTextAttrName";
+        name.text = "Diffuse Model";
+        name.fontDescription = this.fd;
+        DiffuseModelLayout.addChild(name);
+
+        var diffuseModel = this.createDiffuseModelPopup();
+        DiffuseModelLayout.addChild(diffuseModel);
+
+        attrsVerticalLayout.addChild(DiffuseModelLayout);
 
         materialSection.contentRoot.addChild(attrsVerticalLayout);
 
@@ -603,6 +665,7 @@ class MaterialInspector extends ScriptWidget {
     }
 
     techniqueButton: Atomic.UIButton;
+    diffuseModelButton: Atomic.UIButton;
     material: Atomic.Material;
     asset: ToolCore.Asset;
     nameTextField: Atomic.UITextField;
