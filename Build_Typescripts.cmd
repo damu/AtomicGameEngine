@@ -1,0 +1,2 @@
+cd Script
+Build_Typescripts.cmd
