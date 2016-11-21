@@ -31,42 +31,32 @@ var techniqueSource = new Atomic.UIMenuItemSource();
 
 var solidSource = new Atomic.UIMenuItemSource();
 solidSource.addItem(new Atomic.UIMenuItem("Diffuse", "Diffuse"));
-solidSource.addItem(new Atomic.UIMenuItem("Diffuse Emissive", "Diffuse Emissive"));
+solidSource.addItem(new Atomic.UIMenuItem("Diffuse Normal Emissive", "Diffuse Normal  Emissive"));
 solidSource.addItem(new Atomic.UIMenuItem("Diffuse Normal", "Diffuse Normal"));
-solidSource.addItem(new Atomic.UIMenuItem("Diffuse Specular", "Diffuse Specular"));
-solidSource.addItem(new Atomic.UIMenuItem("Diffuse Normal Specular", "Diffuse Normal Specular"));
-solidSource.addItem(new Atomic.UIMenuItem("Diffuse Unlit", "Diffuse Unlit"));
+solidSource.addItem(new Atomic.UIMenuItem("Diffuse PBR", "Diffuse PBR"));
+solidSource.addItem(new Atomic.UIMenuItem("Diffuse Normal PBR", "Diffuse Normal PBR"));
 solidSource.addItem(new Atomic.UIMenuItem("No Texture", "No Texture"));
 
 var tranSource = new Atomic.UIMenuItemSource();
 tranSource.addItem(new Atomic.UIMenuItem("Alpha", "Alpha"));
-tranSource.addItem(new Atomic.UIMenuItem("Alpha Mask", "Alpha Mask"));
-tranSource.addItem(new Atomic.UIMenuItem("Additive", "Additive"));
-tranSource.addItem(new Atomic.UIMenuItem("Additive Alpha", "Additive Alpha"));
+tranSource.addItem(new Atomic.UIMenuItem("Normal Alpha", "Emissive Normal Alpha"));
+tranSource.addItem(new Atomic.UIMenuItem("PBR Alpha", "Emissive Normal Alpha"));
 tranSource.addItem(new Atomic.UIMenuItem("Emissive Alpha", "Emissive Alpha"));
-tranSource.addItem(new Atomic.UIMenuItem("Alpha AO", "Alpha AO"));
-tranSource.addItem(new Atomic.UIMenuItem("Alpha Mask AO", "Alpha Mask AO"));
-
-var lightmapSource = new Atomic.UIMenuItemSource();
-lightmapSource.addItem(new Atomic.UIMenuItem("Lightmap", "Lightmap"));
-lightmapSource.addItem(new Atomic.UIMenuItem("Lightmap Alpha", "Lightmap Alpha"));
 
 var projectSource = new Atomic.UIMenuItemSource();
 var _ = new Atomic.UIMenuItem();
 
 var techniqueLookup = {
-    "Techniques/Diff.xml": "Diffuse",
-    "Techniques/DiffEmissive.xml": "Diffuse Emissive",
-    "Techniques/DiffNormal.xml": "Diffuse Normal",
-    "Techniques/DiffSpec.xml": "Diffuse Specular",
-    "Techniques/DiffNormalSpec.xml": "Diffuse Normal Specular",
-    "Techniques/DiffUnlit.xml": "Diffuse Unlit",
-    "Techniques/DiffAlpha.xml": "Alpha",
-    "Techniques/DiffAlphaMask.xml": "Alpha Mask",
-    "Techniques/DiffAdd.xml": "Additive",
-    "Techniques/NoTexture.xml": "No Texture",
-    "Techniques/DiffLightMap.xml": "Lightmap",
-    "Techniques/DiffLightMapAlpha.xml": "Lightmap Alpha"
+    "Techniques/PBR/PBRDiff.xml": "Diffuse",
+    "Techniques/PBR/PBRDiffNormalEmissive.xml": "Diffuse Normal Emissive",
+    "Techniques/PBR/PBRDiffNormal.xml": "Diffuse Normal",
+    "Techniques/PBR/PBRMetallicRoughDiffSpec.xml": "Diffuse PBR",
+    "Techniques/PBR/PBRMetallicRoughDiffNormalSpec.xml": "Diffuse Normal PBR",
+    "Techniques/PBR/PBRDiffAlpha.xml": "Alpha",
+    "Techniques/PBR/PBRDiffNormalEmissiveAlpha.xml": "Emissive Normal Alpha",
+    "Techniques/PBR/PBRDiffNormalAlpha.xml": "Normal Alpha",
+    "Techniques/PBR/PBRMetallicRoughDiffSpecAlpha.xml": "PBR Alpha",
+    "Techniques/PBR/PBRNoTexture.xml": "No Texture"
 };
 
 var techniqueReverseLookup = {};
@@ -478,10 +468,6 @@ class MaterialInspector extends ScriptWidget {
 
         _ = new Atomic.UIMenuItem("Transparency");
         _.subSource = tranSource;
-        techniqueSource.addItem(_);
-
-        _ = new Atomic.UIMenuItem("Lightmap");
-        _.subSource = lightmapSource;
         techniqueSource.addItem(_);
 
         var projectTechniquesPath = ToolCore.toolSystem.project.getResourcePath() + "Techniques";

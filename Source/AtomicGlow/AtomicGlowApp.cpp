@@ -103,14 +103,11 @@ namespace AtomicGlow
             }
         }
 
-        if (!env->InitFromJSON())
+        if (!env->Initialize())
         {
-            ErrorExit(ToString("Unable to initialize tool environment from %s", env->GetDevConfigFilename().CString()));
+            ErrorExit("Unable to initialize tool environment from %s");
             return;
         }
-
-        tsystem->SetCLI();
-        tsystem->SetDataPath(env->GetRootSourceDir() + "/Resources/");
 
         engineParameters_["ResourcePrefixPaths"] = env->GetRootSourceDir() + "/Resources/";
         engineParameters_["ResourcePaths"] = ToString("CoreData;EditorData;%sResources;%sCache", projectPath.CString(), projectPath.CString());

@@ -287,7 +287,7 @@ void PS(
         finalColor.rgb = pow(BRDF * lightColor * (atten * shadow) / M_PI, 1.0/ 2.2);
 
         #ifdef AMBIENT
-            finalColor += cAmbientColor.rgb * diffColor.rgb;
+            finalColor += diffColor.rgb;
             finalColor += cMatEmissiveColor;
             oColor = float4(GetFog(finalColor, fogFactor), diffColor.a);
         #else
@@ -305,7 +305,7 @@ void PS(
         float3 finalColor = iVertexLight * diffColor.rgb;
         #ifdef AO
             // If using AO, the vertex light ambient is black, calculate occluded ambient here
-            finalColor += Sample2D(EmissiveMap, iTexCoord2).rgb * cAmbientColor.rgb * diffColor.rgb;
+            finalColor += Sample2D(EmissiveMap, iTexCoord2).rgb * diffColor.rgb;
         #endif
 
         #ifdef MATERIAL

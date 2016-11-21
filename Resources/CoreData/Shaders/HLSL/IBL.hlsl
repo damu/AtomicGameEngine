@@ -227,7 +227,7 @@
         return lerp(normal, reflection, lerpFactor);
     }
 
-    float GetMipFromRougness(float roughness)
+    float GetMipFromRoughness(float roughness)
     {
         float Level = 3 - 1.15 * log2( roughness );
         return 9.0 - 1 - Level;
@@ -244,7 +244,7 @@
         return specColor * AB.x + AB.y;
     }
 
-    float3 fix_cube_lookup(float3 v) 
+    float3 FixCubeLookup(float3 v) 
     {
         float M = max(max(abs(v.x), abs(v.y)), abs(v.z));
         float scale = (1024 - 1) / 1024;
@@ -267,6 +267,8 @@
         reflectVec = GetSpecularDominantDir(wsNormal, reflectVec, roughness);
         const float ndv = saturate(dot(-toCamera, wsNormal));
 
+        diffColor *= 1- 0.3333 * roughness;
+
         /// Test: Parallax correction, currently not working
 
         // float3 intersectMax = (cZoneMax - toCamera) / reflectVec;
@@ -281,19 +283,19 @@
         // // Get corrected reflection
         // reflectVec = intersectionPos - ((cZoneMin + cZoneMax )/ 2);
 
-        const float mipSelect = GetMipFromRougness(roughness);
-        float3 cube = SampleCubeLOD(ZoneCubeMap, float4(fix_cube_lookup(reflectVec), mipSelect)).rgb;
-        float3 cubeD = SampleCubeLOD(ZoneCubeMap, float4(fix_cube_lookup(wsNormal), 9.0)).rgb;
+        const float mipSelect = GetMipFromRoughness(roughness);
+        float3 cube = SampleCubeLOD(ZoneCubeMap, float4(FixCubeLookup(reflectVec), mipSelect)).rgb;
+        float3 cubeD = SampleCubeLOD(ZoneCubeMap, float4(FixCubeLookup(wsNormal), 9.0)).rgb;
         
         // Fake the HDR texture
-        float brightness = clamp(cAmbientColor.a, 0.0, 1.0);
-        float darknessCutoff = clamp((cAmbientColor.a - 1.0) * 0.1, 0.0, 0.25);
+        float brightness = clamp(0.4, 0.0, 1.0);
+        float darknessCutoff = clamp((0.4 - 1.0) * 0.1, 0.0, 0.25);
 
         const float hdrMaxBrightness = 5.0;
-        float3 hdrCube = pow(cube + darknessCutoff, max(1.0, cAmbientColor.a));
+        float3 hdrCube = pow(cube + darknessCutoff, max(1.0, 0.4));
         hdrCube += max(0.0, hdrCube - 1.0) * hdrMaxBrightness;
 
-        float3 hdrCubeD = pow(cubeD + darknessCutoff, max(1.0, cAmbientColor.a));
+        float3 hdrCubeD = pow(cubeD + darknessCutoff, max(1.0, 0.4));
         hdrCubeD += max(0.0, hdrCubeD - 1.0) * hdrMaxBrightness;
 
         const float3 environmentSpecular = EnvBRDFApprox(specColor, roughness, ndv);

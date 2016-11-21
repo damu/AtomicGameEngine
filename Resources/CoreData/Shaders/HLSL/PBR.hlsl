@@ -1,7 +1,7 @@
 #include "BRDF.hlsl"
 #ifdef COMPILEPS
 
- float3 SphereLight(float3 worldPos, float3 lightVec, float3 normal, float3 toCamera, float roughness, float3 specColor, out float ndl)
+ float3 SphereLight(float vdh, float3 worldPos, float3 lightVec, float3 normal, float3 toCamera, float roughness, float3 specColor, out float ndl)
     {
         float3 pos   = (cLightPosPS.xyz - worldPos);
         float radius = cLightRad;
@@ -24,12 +24,12 @@
 
         const float3 fresnelTerm = Fresnel(specColor, hdv) ;
         const float distTerm     = Distribution(hdn, alphaPrime);
-        const float visTerm      = Visibility(ndl, ndv, roughness);
+        const float visTerm      = Visibility(ndl, ndv, vdh, roughness);
 
         return distTerm * visTerm * fresnelTerm ;
     }
 
-    float3 TubeLight(float3 worldPos, float3 lightVec, float3 normal, float3 toCamera, float roughness, float3 specColor, out float ndl)
+    float3 TubeLight(float vdh, float3 worldPos, float3 lightVec, float3 normal, float3 toCamera, float roughness, float3 specColor, out float ndl)
     {
          float radius      = cLightRad;
          float len         = cLightLength; 
@@ -71,7 +71,7 @@
 
         const float3 fresnelTerm = Fresnel(specColor, hdv) ;
         const float distTerm     = Distribution(hdn, alphaPrime);
-        const float visTerm      = Visibility(ndl, ndv, roughness);
+        const float visTerm      = Visibility(ndl, ndv, vdh, roughness);
 
         return distTerm * visTerm * fresnelTerm ;
     }
@@ -101,12 +101,12 @@
             {
                 if(cLightLength > 0.0)
                 {
-                    specularFactor = TubeLight(worldPos, lightVec, normal, toCamera, roughness, specColor, ndl);
+                    specularFactor = TubeLight(vdh, worldPos, lightVec, normal, toCamera, roughness, specColor, ndl);
                     specularFactor *= ndl;
                 }
                 else
                 {
-                    specularFactor = SphereLight(worldPos, lightVec, normal, toCamera, roughness, specColor, ndl);
+                    specularFactor = SphereLight(vdh, worldPos, lightVec, normal, toCamera, roughness, specColor, ndl);
                     specularFactor *= ndl;
                 }
             }
@@ -114,7 +114,7 @@
             {
                 const float3 fresnelTerm = Fresnel(specColor, vdh) ;
                 const float distTerm = Distribution(ndh, roughness);
-                const float visTerm = Visibility(ndl, ndv, roughness);
+                const float visTerm = Visibility(ndl, ndv, vdh, roughness);
                 specularFactor = distTerm * visTerm * fresnelTerm * ndl/ M_PI;
             }
 
