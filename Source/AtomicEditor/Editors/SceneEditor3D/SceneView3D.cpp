@@ -30,6 +30,8 @@
 #include <Atomic/Graphics/Camera.h>
 
 #include <Atomic/Graphics/Graphics.h>
+#include <Atomic/Graphics/Renderer.h>
+#include <Atomic/Graphics/RenderPath.h>
 #include <Atomic/Graphics/DebugRenderer.h>
 #include <Atomic/Graphics/Viewport.h>
 #include <Atomic/Graphics/Octree.h>
@@ -86,7 +88,8 @@ SceneView3D ::SceneView3D(Context* context, SceneEditor3D *sceneEditor) :
     perspectCamPosition_(0, 0, 0),
     perspectiveYaw_(0),
     perspectivePitch_(0),
-    fromOrthographic_(false)
+    fromOrthographic_(false),
+    selectMode_(DRAWABLE_GEOMETRY)
 {
 
     sceneEditor_ = sceneEditor;
@@ -121,6 +124,22 @@ SceneView3D ::SceneView3D(Context* context, SceneEditor3D *sceneEditor) :
     assert(octree_.NotNull());
 
     cameraNode_->SetPosition(Vector3(0, 0, -10));
+
+    Renderer* renderer = GetSubsystem<Renderer>();
+
+    renderer->SetViewport(0, viewport_);
+    // Add post-processing effects appropriate with the example scene
+    SharedPtr<RenderPath> effectRenderPath = viewport_->GetRenderPath()->Clone();
+    effectRenderPath->Append(cache->GetResource<XMLFile>("PostProcess/GammaCorrection.xml"));
+    effectRenderPath->Append(cache->GetResource<XMLFile>("PostProcess/Tonemap.xml"));
+   // effectRenderPath->Append(cache->GetResource<XMLFile>("PostProcess/ColorCorrection.xml"));
+   // effectRenderPath->Append(cache->GetResource<XMLFile>("PostProcess/BloomHDR.xml"));
+   // effectRenderPath->Append(cache->GetResource<XMLFile>("PostProcess/SSAO.xml"));
+    effectRenderPath->Append(cache->GetResource<XMLFile>("PostProcess/FXAA3.xml"));
+
+    viewport_->SetRenderPath(effectRenderPath);
+
+    renderer->SetHDRRendering(true);
 
     SetView(scene_, camera_);
     SetAutoUpdate(false);
@@ -321,6 +340,34 @@ void SceneView3D::MoveCamera(float timeStep)
             SetFocus();
             cameraNode_->Translate(Vector3::DOWN * cameraMoveSpeed_ * timeStep);
         }
+    }
+    else
+    {
+        if (input->GetKeyDown(KEY_W))
+        {
+            sceneEditor_->GetGizmo()->SetEditMode(EDIT_MOVE);
+        }
+        if (input->GetKeyDown(KEY_E))
+        {
+            sceneEditor_->GetGizmo()->SetEditMode(EDIT_ROTATE);
+        }
+        if (input->GetKeyDown(KEY_R))
+        {
+            sceneEditor_->GetGizmo()->SetEditMode(EDIT_SCALE);
+        }
+        if (input->GetKeyDown(KEY_A))
+        {
+            selectMode_ = DRAWABLE_GEOMETRY;
+        }
+        if (input->GetKeyDown(KEY_S))
+        {
+            selectMode_ = DRAWABLE_LIGHT;
+        }
+        if (input->GetKeyDown(KEY_D))
+        {
+            selectMode_ = DRAWABLE_ZONE;
+        }
+
     }
 
     if (cameraMove_)
@@ -551,7 +598,7 @@ void SceneView3D::HandlePostRenderUpdate(StringHash eventType, VariantMap& event
             Ray camRay  = GetCameraRay();
             PODVector<RayQueryResult> result;
 
-            RayOctreeQuery query(result, camRay, RAY_TRIANGLE, camera_->GetFarClip(), DRAWABLE_GEOMETRY, 0x7fffffff);
+            RayOctreeQuery query(result, camRay, RAY_TRIANGLE, camera_->GetFarClip(), selectMode_, 0x7fffffff);
             octree_->RaycastSingle(query);
 
             if (query.result_.Size())
@@ -606,7 +653,7 @@ void SceneView3D::HandlePostRenderUpdate(StringHash eventType, VariantMap& event
         };
         */
 
-        RayOctreeQuery query(result, camRay, RAY_TRIANGLE, camera_->GetFarClip(), DRAWABLE_GEOMETRY, 0x7fffffff);
+        RayOctreeQuery query(result, camRay, RAY_TRIANGLE, camera_->GetFarClip(), selectMode_, 0x7fffffff);
         octree_->RaycastSingle(query);
 
         if (query.result_.Size())

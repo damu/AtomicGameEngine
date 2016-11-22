@@ -18,5 +18,8 @@ void PS(float2 iScreenPos : TEXCOORD0,
     out float4 oColor : OUTCOLOR0)
 {
     float3 color = Sample2D(DiffMap, iScreenPos).rgb;
-    oColor = float4(ToInverseGamma(color), 1.0);
+    float3 sRGBLo = color * 12.92;
+    float3 sRGBHi = (pow(abs(color), 1.0/2.4) * 1.055) - 0.055;
+    float3 sRGB = (color <= 0.0031308) ? sRGBLo : sRGBHi; 
+    oColor = float4(sRGB, 1.0);
 }

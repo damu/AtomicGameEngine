@@ -106,6 +106,8 @@ private:
     float yaw_;
     float pitch_;
 
+    unsigned selectMode_;
+
     Vector3 perspectCamPosition_;
     float perspectiveYaw_;
     float perspectivePitch_;

@@ -289,13 +289,13 @@
         
         // Fake the HDR texture
         float brightness = clamp(0.4, 0.0, 1.0);
-        float darknessCutoff = clamp((0.4 - 1.0) * 0.1, 0.0, 0.25);
+        float darknessCutoff = clamp((0.5 - 1.0) * 0.1, 0.0, 0.25);
 
         const float hdrMaxBrightness = 5.0;
-        float3 hdrCube = pow(cube + darknessCutoff, max(1.0, 0.4));
+        float3 hdrCube = pow(cube + darknessCutoff, max(1.0, 0.5));
         hdrCube += max(0.0, hdrCube - 1.0) * hdrMaxBrightness;
 
-        float3 hdrCubeD = pow(cubeD + darknessCutoff, max(1.0, 0.4));
+        float3 hdrCubeD = pow(cubeD + darknessCutoff, max(1.0, 0.5));
         hdrCubeD += max(0.0, hdrCubeD - 1.0) * hdrMaxBrightness;
 
         const float3 environmentSpecular = EnvBRDFApprox(specColor, roughness, ndv);
