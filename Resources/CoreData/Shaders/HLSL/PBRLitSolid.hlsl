@@ -216,6 +216,14 @@ void PS(
         float metalness = cMetallic;
     #endif
 
+    #ifdef SUBSURFACE
+        #ifdef SSTex
+            float3 SubSurfaceColor = Sample2D(EmissiveMap, iTexCoord.xy).rgb + cMatEmissiveColor.rgb;
+        #else
+            float3 SubSurfaceColor = cMatEmissiveColor.rgb;
+        #endif
+    #endif
+
     roughness *= roughness;
 
     roughness = clamp(roughness, ROUGHNESS_FLOOR, 1.0);
@@ -284,7 +292,19 @@ void PS(
 
 
         float3 BRDF = GetBRDF(iWorldPos.xyz, lightDir, lightVec, toCamera, normal, roughness, diffColor.rgb, specColor);
-        finalColor.rgb = (BRDF * lightColor * (atten * shadow) / M_PI);
+        #ifdef SUBSURFACE
+
+           // float3 SubSurfaceColor = Sample2D(EmissiveMap, iTexCoord).rgb
+            //float3 SubSurfaceColor = float3(1, 0.0 , 0);
+
+            float3 subSurface = SubSurfaceScattering(SubSurfaceColor, lightVec, toCamera, normal, 1);
+
+
+            finalColor.rgb = ((BRDF + subSurface) * lightColor / M_PI);
+        #else
+            finalColor.rgb = (BRDF * lightColor * (atten * shadow) / M_PI);
+        #endif  
+        
 
         #ifdef AMBIENT
             finalColor += diffColor.rgb;
@@ -316,6 +336,7 @@ void PS(
 
             finalColor += lightInput.rgb * diffColor.rgb + lightSpecColor * specColor;
         #endif
+
 
         const float3 toCamera = normalize(iWorldPos.xyz - cCameraPosPS);
 

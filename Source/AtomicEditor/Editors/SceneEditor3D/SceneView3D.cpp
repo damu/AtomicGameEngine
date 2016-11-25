@@ -306,6 +306,14 @@ void SceneView3D::MoveCamera(float timeStep)
     bool superdown = input->GetKeyDown(KEY_LGUI) || input->GetKeyDown(KEY_RGUI);
 #endif
 
+
+    if (input->GetKeyDown(KEY_F12))
+    {
+        Image* photo;
+        GetSubsystem<Graphics>()->TakeScreenShot(photo);
+        photo->SavePNG("AtomicScreenshot");
+    }
+
     if (!orbitting && mouseInView && !superdown && input->GetMouseButtonDown(MOUSEB_RIGHT)) {
 
         // Read WASD keys and move the camera scene node to the corresponding direction if they are pressed

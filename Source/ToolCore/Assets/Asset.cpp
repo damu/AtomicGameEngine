@@ -268,6 +268,7 @@ bool Asset::CreateImporter()
         textureFormats.Push(".png");
         textureFormats.Push(".tga");
         textureFormats.Push(".dds");
+        textureFormats.Push(".pvr");
 
         // todo, externalize recognizers
         if (ext == ".fbx" || ext == ".blend" || ext == ".dae" || ext == ".mdl" || ext == ".obj")
