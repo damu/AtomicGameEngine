@@ -260,7 +260,7 @@ class MaterialInspector extends ScriptWidget {
 
         var button = this.diffuseModelButton = new Atomic.UIButton();
 
-        button.text = "foobar";
+        button.text = "Diffuse Model 1";
 
         button.fontDescription = this.fd;
 
