@@ -1,1 +1,1 @@
-"C:\Program Files (x86)\NSIS\makensis.exe" %1=%2 %3=%4 %5=%6 %7
+"C:\Program Files (x86)\NSIS\makensis.exe" /installer/AtomicEditor.nsi ATOMIC_ROOT=%2 EDITOR_VERSION=%4 INSTALLER_NAME=%6

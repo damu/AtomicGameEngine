@@ -29,7 +29,6 @@
 #include <Atomic/Graphics/DebugRenderer.h>
 #include <Atomic/Graphics/Viewport.h>
 #include <Atomic/Graphics/Octree.h>
-#include <Atomic/Graphics/Renderer.h>
 
 #include <Atomic/IO/FileSystem.h>
 #include <Atomic/Resource/ResourceCache.h>
@@ -112,10 +111,11 @@ SceneEditor3D::SceneEditor3D(Context* context, const String &fullpath, UITabCont
     gizmo3D_->Show();
     UpdateGizmoSnapSettings();
 
-	Renderer* renderer = GetSubsystem<Renderer>();
 
-	renderer->SetHDRRendering(true);
-
+    /*renderer->GetViewport(0)->GetRenderPath()->Append(cache->GetResource<XMLFile>("PostProcess/SSAO.xml"));
+    renderer->GetViewport(0)->GetRenderPath()->Append(cache->GetResource<XMLFile>("PostProcess/Tonemap.xml"));
+    renderer->GetViewport(0)->GetRenderPath()->Append(cache->GetResource<XMLFile>("PostProcess/GammaCorrection.xml"));*/
+  
     SubscribeToEvent(E_UPDATE, ATOMIC_HANDLER(SceneEditor3D, HandleUpdate));
 
     SubscribeToEvent(E_GIZMOEDITMODECHANGED, ATOMIC_HANDLER(SceneEditor3D, HandleGizmoEditModeChanged));

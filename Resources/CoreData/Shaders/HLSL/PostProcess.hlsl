@@ -1,3 +1,4 @@
+#include "ColorSpace.hlsl"
 
 static const float PI = 3.14159265;
 
@@ -55,9 +56,22 @@ float4 GaussianBlur(int blurKernelSize, float2 blurDir, float2 blurRadius, float
 
 static const float3 LumWeights = float3(0.2126, 0.7152, 0.0722);
 
+float getLuminance(float3 rgb) 
+{
+    return dot(LumWeights, rgb);
+}
+
+
 float3 ReinhardEq3Tonemap(float3 x)
 {
-    return x / (x + 1.0);
+   // x *= 2.0;
+    float3 rgb =  x / (x + 1.0);
+    
+    float luminance = getLuminance(x);
+    rgb = x / (1.0 + luminance);
+
+    return rgb;
+
 }
 
 float3 ReinhardEq4Tonemap(float3 x, float white)

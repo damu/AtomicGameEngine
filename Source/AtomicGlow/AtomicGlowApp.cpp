@@ -105,7 +105,9 @@ namespace AtomicGlow
 
         if (!env->Initialize())
         {
+
 			ErrorExit("Unable to initialize tool environment from %s");
+
             return;
         }
 

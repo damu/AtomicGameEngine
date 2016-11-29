@@ -1,7 +1,9 @@
 #include "BRDF.hlsl"
 #ifdef COMPILEPS
 
- float3 SphereLight(float3 worldPos, float3 lightVec, float3 normal, float3 toCamera, float roughness, float3 specColor, out float ndl)
+    
+
+    float3 SphereLight(float3 worldPos, float3 lightVec, float3 normal, float3 toCamera, float roughness, float3 specColor, out float ndl)
     {
         float3 pos   = (cLightPosPS.xyz - worldPos);
         float radius = cLightRad;
@@ -17,6 +19,7 @@
         float hdn = saturate(dot(h, normal));
         float hdv = dot(h, toCamera);
         float ndv = saturate(dot(normal, toCamera));
+        float vdh = saturate(dot(toCamera, h));
 
         float distL      = length(pos);
         float alpha      = roughness * roughness;
@@ -24,7 +27,7 @@
 
         const float3 fresnelTerm = Fresnel(specColor, hdv) ;
         const float distTerm     = Distribution(hdn, alphaPrime);
-        const float visTerm      = Visibility(ndl, ndv, roughness);
+        const float visTerm      = Visibility(ndl, ndv, vdh, roughness);
 
         return distTerm * visTerm * fresnelTerm ;
     }
@@ -64,6 +67,7 @@
         float hdn = saturate(dot(h, normal));
         float hdv = dot(h, toCamera);
         float ndv = saturate(dot(normal, toCamera));
+        float vdh = saturate(dot(toCamera, h));
 
         float distL      = length(closestPoint);
         float alpha      = roughness * roughness;
@@ -71,9 +75,22 @@
 
         const float3 fresnelTerm = Fresnel(specColor, hdv) ;
         const float distTerm     = Distribution(hdn, alphaPrime);
-        const float visTerm      = Visibility(ndl, ndv, roughness);
+        const float visTerm      = Visibility(ndl, ndv, vdh, roughness);
 
         return distTerm * visTerm * fresnelTerm ;
+    }
+
+    float3 SubSurfaceScattering(float3 SubSurfaceColor, float3 lightVec, float3 toCamera, float3 normal, float alpha)
+    {
+        float3 Hn = normalize(toCamera + lightVec);
+
+        float inScatter = pow(saturate(dot(lightVec, -toCamera)), 12) * lerp(3, 0.1, alpha);
+        float normalContribution = saturate(dot(normal, Hn)) * alpha + 1 - alpha;
+
+        float backScatter = 0.5 * normalContribution / (M_PI * 2);
+
+        return SubSurfaceColor * lerp(backScatter, 1, inScatter);
+        
     }
 
     //Return the PBR BRDF value
@@ -96,6 +113,7 @@
         const float3 diffuseFactor = Diffuse(diffColor, roughness, ndv, ndl, vdh)  * ndl;
         float3 specularFactor = 0;
 
+
         #ifdef SPECULAR
             if(cLightRad > 0.0)
             {
@@ -114,7 +132,7 @@
             {
                 const float3 fresnelTerm = Fresnel(specColor, vdh) ;
                 const float distTerm = Distribution(ndh, roughness);
-                const float visTerm = Visibility(ndl, ndv, roughness);
+                const float visTerm = Visibility(ndl, ndv, vdh, roughness);
                 specularFactor = distTerm * visTerm * fresnelTerm * ndl/ M_PI;
             }
 
